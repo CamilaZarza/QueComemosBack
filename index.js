@@ -27,27 +27,38 @@ app.post('/generar-receta', async (req, res) => {
     const model = genAI.getGenerativeModel({ model: 'models/gemini-2.0-flash' });
 
 
-    let prompt = `Genera dos recetas completa para un plato unicamente con los siguintes ingredientes: "${nombrePlato}", que no incluya ingredientes no ingresados. Mostrar ingredientes, preparación paso a paso, informacion nutricional (calorias, proteinas y carbohidratos), tiempo de coccion y algún consejo útil. Si no ingresa ingredientes que no sean comestibles o validos poner "Por favor ingresar ingredientes validos"`;
+    let prompt = `Genera dos recetas completas para un plato utilizando únicamente los siguientes ingredientes: "${nombrePlato}". 
+    No incluir ingredientes que no hayan sido ingresados. 
+    Cada receta debe incluir: 
+    - lista de ingredientes
+    - preparación paso a paso
+    - información nutricional (calorías, proteínas y carbohidratos)
+    - un consejo útil. 
+    Si se ingresan ingredientes no válidos o no comestibles, responder con: "Por favor, ingresar ingredientes válidos."`;
 
-    if (filtros.tipoDieta != '') {
-      prompt += `Que las dos recetas generadas sigan el tipo de dieta: ${filtros.tipoDieta}", y agregar un apartado de "Tipo de dieta: ${filtros.tipoDieta}" por cada receta.`;
-    }
-        if (filtros.tiempo != '') {
-      prompt += `Que las dos recetas generadas tengan un tiempo de preparacion: ${filtros.tiempo}" y agregar un apartado de "Tiempo de coccion: " con el tiempo de coccion estimado, por cada receta..`;
-    }
-        if (filtros.dificultad != '') {
-      prompt += `Que las dos recetas generadas tengan una dificultad: ${filtros.dificultad}" y agregar un apartado de "Dificultad: ${filtros.dificultad}", por cada receta..`;
-    }
-        if (filtros.origen != '') {
-      prompt += `Que las dos recetas generadas sean de origen: ${filtros.origen}" y agregar un apartado de "Origen: ${filtros.origen}", por cada receta..`;
-    }
-        if (filtros.tipoPlato != '') {
-      prompt += `Que las dos recetas generadas sean una: ${filtros.tipoPlato}" y agregar un apartado de "Tipo de Plato: ${filtros.tipoPlato}", por cada receta.`;
-    }
-        if (filtros.coccion != '') {
-      prompt += `Que las dos recetas generadas tengan un metodo de coccion en: ${filtros.coccion}" y agregar un apartado de "Metodos de cocción: ${filtros.coccion}, por cada receta"`;
+    if (filtros.tipoDieta) {
+      prompt += ` En ambas recetas se deben seguir el tipo de dieta "${filtros.tipoDieta}" y deben incluir un apartado "Tipo de dieta: ${filtros.tipoDieta}", escrito correctamente sin caracteres especiales.`;
     }
 
+    if (filtros.tiempo) {
+      prompt += `En ambas recetas el tiempo estimado de preparación debe ser de "${filtros.tiempo}", incluyendo un apartado "Tiempo de cocción: ${filtros.tiempo}".`;
+    }
+
+    if (filtros.dificultad) {
+      prompt += ` En ambas recetas la dificultad debe ser "${filtros.dificultad}", con un apartado "Dificultad: ${filtros.dificultad}".`;
+    }
+
+    if (filtros.origen) {
+      prompt += ` En ambas recetas el origen debe ser "${filtros.origen}" e incluir un apartado "Origen: ${filtros.origen}".`;
+    }
+
+    if (filtros.tipoPlato) {
+      prompt += ` Ambas recetas deben ser del tipo "${filtros.tipoPlato}", incluyendo un apartado "Tipo de plato: ${filtros.tipoPlato}".`;
+    }
+
+    if (filtros.coccion) {
+      prompt += ` En ambas recetas se debe emplear el método de cocción "${filtros.coccion}" y agregar un apartado "Método de cocción: ${filtros.coccion}".`;
+    }
     
     const result = await model.generateContent(prompt);
     const response = await result.response;
